@@ -23,6 +23,28 @@ class Library:
                 status = "Available" if book.available else "Not Available"
                 print(f"{index}. '{book.title}' by {book.author} - {status}")
 
+    def borrow_book(self, book_index):
+        if 1 <= book_index <= len(self.books):
+            book = self.books[book_index - 1]
+            if book.available:
+                book.available = False
+                print(f"You've borrowed '{book.title}'. Enjoy reading!")
+            else:
+                print(f"'{book.title}' is not available for borrowing.")
+        else:
+            print("Invalid book index.")
+
+    def return_book(self, book_index):
+        if 1 <= book_index <= len(self.books):
+            book = self.books[book_index - 1]
+            if not book.available:
+                book.available = True
+                print(f"Thank you for returning '{book.title}'.")
+            else:
+                print("This book is already in the library.")
+        else:
+            print("Invalid book index.")
+
 
 if __name__ == "__main__":
     library = Library()
@@ -40,6 +62,14 @@ if __name__ == "__main__":
             library.add_book(title, author)
         elif choice == "2":
             library.list_books()
+        elif choice == "3":
+            library.list_books()
+            book_index = int(input("Enter book index to borrow: "))
+            library.borrow_book(book_index)
+        elif choice == "4":
+            library.list_books()
+            book_index = int(input("Enter book index to return: "))
+            library.return_book(book_index)
         elif choice == "0":
             print("Exiting...")
             break
