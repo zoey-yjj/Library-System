@@ -1,3 +1,6 @@
+import sqlite3
+
+
 class Book:
     def __init__(self, title, author):
         self.title = title
@@ -7,13 +10,31 @@ class Book:
 
 class Library:
     def __init__(self):
-        self.books = []
+        self.connection = sqlite3.connect("library.db")
+        self.cursor = self.connection.cursor()
+        self.create_tables()
+
+    def create_tables(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY,
+                title TEXT,
+                author TEXT,
+                available BOOLEAN
+            )
+            """
+        )
+        self.connection.commit()
 
     def add_book(self, title, author):
-        book = Book(title, author)
-        self.books.append(book)
+        self.cursor.execute(
+            "INSERT INTO books (title, author, available) VALUES (?, ?, ?)",
+            (title, author, True)
+        )
+        self.connection.commit()
         print(f"Book '{title}' by {author} added to the library.")
-    
+ 
     def list_books(self):
         if not self.books:
             print("No books in the library.")
