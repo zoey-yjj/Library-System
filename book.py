@@ -36,33 +36,48 @@ class Library:
         print(f"Book '{title}' by {author} added to the library.")
  
     def list_books(self):
-        if not self.books:
+        self.cursor.execute("SELECT * FROM books")
+        books = self.cursor.fetchall()
+        
+        if not books:
             print("No books in the library.")
         else:
             print("Library Books:")
-            for index, book in enumerate(self.books, start=1):
-                status = "Available" if book.available else "Not Available"
-                print(f"{index}. '{book.title}' by {book.author} - {status}")
+            for index, book in enumerate(books, start=1):
+                status = "Available" if book[3] else "Not Available"
+                print(f"{index}. '{book[1]}' by {book[2]} - {status}")
 
-    def borrow_book(self, book_index):
-        if 1 <= book_index <= len(self.books):
-            book = self.books[book_index - 1]
-            if book.available:
-                book.available = False
-                print(f"You've borrowed '{book.title}'. Enjoy reading!")
+    def get_book_by_index(self, index):
+        self.cursor.execute("SELECT * FROM books")
+        books = self.cursor.fetchall()
+        
+        if 1 <= index <= len(books):
+            return books[index - 1]
+        return None
+
+    def borrow_book(self, book_id):
+        book = self.get_book_by_index(book_id)
+        if book:
+            if book[3]:
+                self.cursor.execute("UPDATE books SET available = ? WHERE id = ?", (False, book[0]))
+                self.connection.commit()
+                print(f"You've borrowed '{book[1]}'. Enjoy reading!")
             else:
-                print(f"'{book.title}' is not available for borrowing.")
+                print(f"'{book[1]}' is not available for borrowing.")
         else:
             print("Invalid book index.")
 
-    def return_book(self, book_index):
-        if 1 <= book_index <= len(self.books):
-            book = self.books[book_index - 1]
-            if not book.available:
-                book.available = True
-                print(f"Thank you for returning '{book.title}'.")
+    def return_book(self, book_id):
+        book = self.get_book_by_index(book_id)
+        if book:
+            if not book[3]:
+                self.cursor.execute("UPDATE books SET available = ? WHERE id = ?", (True, book[0]))
+                self.connection.commit()
+                print(f"Thank you for returning '{book[1]}'.")
             else:
                 print("This book is already in the library.")
         else:
             print("Invalid book index.")
 
+    def close_connection(self):
+        self.connection.close()
