@@ -18,30 +18,18 @@ class Member_Portal:
             if choice == "1":
                 title = input("Enter book title to borrow: ")
                 author = input("Enter book author: ")
-                book_to_borrow = None
-                # check if the book exist in the library
-                for book in self.library.books:
-                    if book.title == title and book.author == author:
-                        book_to_borrow = book
-                        break
-
-                if book_to_borrow:
-                    member.borrow_book(book_to_borrow)
+                book = self.library.get_book_by_title_author(title, author)
+                if book:
+                    member.borrow_book(book)
                 else:
                     print("Book not found.")
             # return book
             elif choice == "2":
                 title = input("Enter book title to return: ")
                 author = input("Enter book author: ")
-                book_to_return = None
-                # check if the book exist in the library
-                for book in self.library.books:
-                    if book.title == title and book.author == author:
-                        book_to_return = book
-                        break
-
-                if book_to_return:
-                    member.return_book(book_to_return)
+                book = self.library.get_book_by_title_author(title, author)
+                if book:
+                    member.return_book(book)
                 else:
                     print("Book not found.")
             # exit from the system

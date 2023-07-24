@@ -54,6 +54,17 @@ class Library:
         if 1 <= index <= len(books):
             return books[index - 1]
         return None
+    
+    def get_book_by_title_author(self, title, author):
+        self.cursor.execute(
+            "SELECT * FROM books WHERE title = ? AND author = ?", (title, author)
+        )
+        book_data = self.cursor.fetchone()
+        
+        if book_data:
+            book_id, title, author, available = book_data
+            return Book(book_id, title, author, available)
+        return None
 
     def borrow_book(self, book_id):
         book = self.get_book_by_index(book_id)
